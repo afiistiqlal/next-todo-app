@@ -15,18 +15,18 @@ const now = () => {
   const today = new Date();
   const yyyy = today.getFullYear();
   const monthNames = [
-    "January",
-    "February",
-    "March",
+    "Januari",
+    "Februari",
+    "Maret",
     "April",
-    "May",
-    "June",
-    "July",
-    "August",
+    "Mei",
+    "Juni",
+    "Juli",
+    "Agustus",
     "September",
-    "October",
+    "Oktober",
     "November",
-    "December",
+    "Desember",
   ];
   let mm = monthNames[today.getMonth()];
   let dd = today.getDate();
