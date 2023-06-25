@@ -1,17 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import EmptyActivity from "@/components/molecules/EmptyActivity";
 import Layout from "@/components/templates/Layout";
 import Heading from "@/components/atoms/Heading";
 import Button from "@/components/atoms/Button";
 import ActivityGrid from "@/components/templates/ActivityGrid";
 import ActivityCard from "@/components/molecules/ActivityCard";
+import Header from "@/components/templates/Header";
 
 interface Activity {
+  id: number;
   title: string;
   date: string;
 }
 
-const now = () => {
+const currentDate = () => {
   const today = new Date();
   const yyyy = today.getFullYear();
   const monthNames = [
@@ -39,19 +41,40 @@ const now = () => {
 
 export default function Home() {
   const [activities, setActivities] = useState<Activity[]>([]);
+
+  useEffect(() => {
+    const savedActivities = localStorage.getItem("activities");
+    if (savedActivities) {
+      setActivities(JSON.parse(savedActivities));
+    }
+  }, []);
+
+  // Save activities to local storage whenever they change
+  useEffect(() => {
+    localStorage.setItem("activities", JSON.stringify(activities));
+  }, [activities]);
+
   const addActivity = () => {
     const newActivity = {
-      title: "",
-      date: now(),
+      id: activities.length + 1,
+      title: "New Activity",
+      date: currentDate(),
     };
     setActivities((prevActivities) => [...prevActivities, newActivity]);
   };
+
+  const removeActivity = (cardIndex: any) => {
+    setActivities((prevActivities) =>
+      prevActivities.filter((value, i) => i !== cardIndex)
+    );
+  };
+
   return (
     <Layout>
-      <div className="flex justify-between items-center">
-        <Heading text={"Activity"} />
+      <Header>
+        <Heading>Activity</Heading>
         <Button text="➕ Tambah" onClick={addActivity} />
-      </div>
+      </Header>
       <div className="py-8">
         {activities.length === 0 ? (
           <EmptyActivity />
@@ -60,8 +83,10 @@ export default function Home() {
             {activities.map((activity, index) => (
               <ActivityCard
                 key={index}
+                id={activity.id}
                 title={activity.title}
                 date={activity.date}
+                deleteCard={() => removeActivity(index)}
               />
             ))}
           </ActivityGrid>

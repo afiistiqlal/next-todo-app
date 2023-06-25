@@ -7,7 +7,7 @@ type Props = {};
 const EmptyActivity = (props: Props) => {
   return (
     <div className="w-2/4 h-auto my-10 p-4 mx-auto">
-      <Image src={emptyState} alt="" />
+      <Image src={emptyState} alt="" priority/>
     </div>
   );
 };

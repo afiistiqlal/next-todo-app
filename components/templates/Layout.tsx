@@ -14,7 +14,7 @@ const Layout = ({ children }: Props) => {
       className={`${inter.className} min-h-screen flex flex-col items-center bg-slate-100`}
     >
       <Navbar />
-      <main className="w-full py-8 max-w-7xl">{children}</main>
+      <main className="w-full py-8 max-w-5xl">{children}</main>
     </div>
   );
 };

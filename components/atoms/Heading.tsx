@@ -1,11 +1,11 @@
-import React from "react";
+import React, {ReactNode} from "react";
 
 type Props = {
-  text: string;
+  children: ReactNode
 };
 
-const Heading = ({ text }: Props) => {
-  return <h1 className="font-bold uppercase text-3xl">{text}</h1>;
+const Heading = ({ children }: Props) => {
+  return <h1 className="font-bold uppercase text-3xl">{children}</h1>;
 };
 
 export default Heading;
