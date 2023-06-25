@@ -84,7 +84,7 @@ const Activity = (props: Props) => {
 
     if (savedLists) {
       const parsedLists = JSON.parse(savedLists);
-      setActivities(
+      setNewList(
         parsedLists
           .filter((list: any) => list.activityId.toString() === activityId)
           .map((list: any) => ({ ...list }))
