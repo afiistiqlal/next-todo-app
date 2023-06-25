@@ -41,7 +41,6 @@ const Activity = (props: Props) => {
       finished: false,
       priority: priority,
     };
-    console.log(newList);
     setNewList((prevLists) => [...prevLists, newList]);
     setModal(false);
   };
@@ -67,6 +66,8 @@ const Activity = (props: Props) => {
 
   useEffect(() => {
     const savedActivities = localStorage.getItem("activities");
+    const savedLists = localStorage.getItem("lists");
+
     if (savedActivities) {
       const parsedActivities = JSON.parse(savedActivities);
       setActivities(
@@ -78,11 +79,16 @@ const Activity = (props: Props) => {
         })
       );
     }
+
+    if (savedLists) {
+      setNewList(JSON.parse(savedLists));
+    }
   }, [id, newTitle]);
 
   useEffect(() => {
     localStorage.setItem("activities", JSON.stringify(activities));
-  }, [activities]);
+    localStorage.setItem("lists", JSON.stringify(lists));
+  }, [activities, lists]);
 
   return (
     <Layout>
