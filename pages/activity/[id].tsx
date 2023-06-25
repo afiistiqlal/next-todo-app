@@ -13,6 +13,7 @@ import Link from "next/link";
 
 interface List {
   id: number;
+  activityId: string | null;
   title: string;
   finished: boolean;
 }
@@ -26,7 +27,7 @@ type Props = {};
 
 const Activity = (props: Props) => {
   const searchParams = useSearchParams();
-  const id = searchParams.get("id");
+  const activityId = searchParams.get("id");
   const title = searchParams.get("title");
 
   const [newTitle, setNewTitle] = useState(title);
@@ -37,6 +38,7 @@ const Activity = (props: Props) => {
   const addList = (listName: string, priority: string) => {
     const newList = {
       id: lists.length + 1,
+      activityId: activityId,
       title: listName,
       finished: false,
       priority: priority,
@@ -72,7 +74,7 @@ const Activity = (props: Props) => {
       const parsedActivities = JSON.parse(savedActivities);
       setActivities(
         parsedActivities.map((activity: any) => {
-          if (activity.id.toString() === id) {
+          if (activity.id.toString() === activityId) {
             return { ...activity, title: newTitle };
           }
           return activity;
@@ -81,9 +83,17 @@ const Activity = (props: Props) => {
     }
 
     if (savedLists) {
-      setNewList(JSON.parse(savedLists));
+      const parsedLists = JSON.parse(savedLists);
+      setActivities(
+        parsedLists.map((list: any) => {
+          if (list.activityId.toString() === activityId) {
+            return { ...list };
+          }
+          return list;
+        })
+      );
     }
-  }, [id, newTitle]);
+  }, [activityId, newTitle]);
 
   useEffect(() => {
     localStorage.setItem("activities", JSON.stringify(activities));
