@@ -84,11 +84,14 @@ const Activity = (props: Props) => {
 
     if (savedLists) {
       const parsedLists = JSON.parse(savedLists);
-      setNewList(
-        parsedLists
-          .filter((list: any) => list.activityId.toString() === activityId)
-          .map((list: any) => ({ ...list }))
+      const filteredLists = parsedLists.filter(
+        (list: any) => list.activityId.toString() === activityId
       );
+      const newList =
+        filteredLists.length > 0
+          ? filteredLists.map((list: any) => ({ ...list }))
+          : [];
+      setNewList(newList);
     }
   }, [activityId, newTitle]);
 
