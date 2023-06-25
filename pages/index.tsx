@@ -49,7 +49,6 @@ export default function Home() {
     }
   }, []);
 
-  // Save activities to local storage whenever they change
   useEffect(() => {
     localStorage.setItem("activities", JSON.stringify(activities));
   }, [activities]);

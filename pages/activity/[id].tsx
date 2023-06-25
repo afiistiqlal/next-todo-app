@@ -1,6 +1,6 @@
 import Layout from "@/components/templates/Layout";
-import React, { ChangeEvent, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import React, { ChangeEvent, useEffect, useState } from "react";
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import Heading from "@/components/atoms/Heading";
 import { BsPencil } from "react-icons/bs";
 import { IoIosArrowBack } from "react-icons/io";
@@ -16,16 +16,23 @@ interface List {
   title: string;
   finished: boolean;
 }
+interface Activity {
+  id: number;
+  title: string;
+  date: string;
+}
 
 type Props = {};
 
 const Activity = (props: Props) => {
   const searchParams = useSearchParams();
+  const id = searchParams.get("id");
   const title = searchParams.get("title");
 
   const [newTitle, setNewTitle] = useState(title);
   const [lists, setNewList] = useState<List[]>([]);
   const [modal, setModal] = useState(false);
+  const [activities, setActivities] = useState<Activity[]>([]);
 
   const addList = (listName: string, priority: string) => {
     const newList = {
@@ -57,6 +64,25 @@ const Activity = (props: Props) => {
   const closeModal = () => {
     setModal(false);
   };
+
+  useEffect(() => {
+    const savedActivities = localStorage.getItem("activities");
+    if (savedActivities) {
+      const parsedActivities = JSON.parse(savedActivities);
+      setActivities(
+        parsedActivities.map((activity: any) => {
+          if (activity.id.toString() === id) {
+            return { ...activity, title: newTitle };
+          }
+          return activity;
+        })
+      );
+    }
+  }, [id, newTitle]);
+
+  useEffect(() => {
+    localStorage.setItem("activities", JSON.stringify(activities));
+  }, [activities]);
 
   return (
     <Layout>
