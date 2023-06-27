@@ -6,12 +6,18 @@ import Button from "@/components/atoms/Button";
 import ActivityGrid from "@/components/templates/ActivityGrid";
 import ActivityCard from "@/components/molecules/ActivityCard";
 import Header from "@/components/templates/Header";
+import Hygraph from "./api/hygraph";
+import { activityQuery } from "./api/query";
 
 interface Activity {
-  id: number;
-  title: string;
-  date: string;
+  activityId: number;
+  activityTitle: string;
+  activityDate: string;
 }
+
+type Props = {
+  allActivity: Activity;
+};
 
 const currentDate = () => {
   const today = new Date();
@@ -39,25 +45,54 @@ const currentDate = () => {
   return formattedToday;
 };
 
-export default function Home() {
+export async function getStaticProps() {
+  try {
+    const { allActivity } = await Hygraph.request<{ allActivity: Activity[] }>(
+      activityQuery
+    );
+
+    if (!allActivity) {
+      return {
+        props: {
+          allActivity: [],
+        },
+      };
+    }
+
+    return {
+      props: {
+        allActivity,
+      },
+    };
+  } catch (error) {
+    return {
+      props: {
+        allActivity: ["error"],
+      },
+    };
+  }
+}
+
+export default function Home({ allActivity }: Props) {
+  // console.log(allActivity);
   const [activities, setActivities] = useState<Activity[]>([]);
 
-  useEffect(() => {
-    const savedActivities = localStorage.getItem("activities");
-    if (savedActivities) {
-      setActivities(JSON.parse(savedActivities));
-    }
-  }, []);
+  // useEffect(() => {
+  //   const savedActivities = localStorage.getItem("activities");
+  //   if (savedActivities) {
+  //     setActivities(JSON.parse(savedActivities));
+  //   }
+  // }, []);
 
-  useEffect(() => {
-    localStorage.setItem("activities", JSON.stringify(activities));
-  }, [activities]);
+  // useEffect(() => {
+  //   localStorage.setItem("activities", JSON.stringify(activities));
+  // }, [activities]);
 
   const addActivity = () => {
     const newActivity = {
-      id: activities.length + 1,
-      title: "New Activity",
-      date: currentDate(),
+      activityId: activities.length + 1,
+      activityTitle: "New Activity",
+      activityDate: currentDate(),
     };
     setActivities((prevActivities) => [...prevActivities, newActivity]);
   };
@@ -82,9 +117,9 @@ export default function Home() {
             {activities.map((activity, index) => (
               <ActivityCard
                 key={index}
-                id={activity.id}
-                title={activity.title}
-                date={activity.date}
+                id={activity.activityId}
+                title={activity.activityTitle}
+                date={activity.activityDate}
                 deleteCard={() => removeActivity(index)}
               />
             ))}

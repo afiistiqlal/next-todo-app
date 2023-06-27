@@ -1,6 +1,6 @@
 import Layout from "@/components/templates/Layout";
 import React, { ChangeEvent, useEffect, useState } from "react";
-import { useSearchParams, usePathname, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Heading from "@/components/atoms/Heading";
 import { BsPencil } from "react-icons/bs";
 import { IoIosArrowBack } from "react-icons/io";
@@ -10,6 +10,9 @@ import EmptyList from "@/components/molecules/EmptyList";
 import ListCard from "@/components/molecules/ListCard";
 import NewListModal from "@/components/organisms/NewListModal";
 import Link from "next/link";
+import Hygraph from "../api/hygraph";
+import { GetStaticProps } from "next";
+import { lists, priorities } from "../api/query";
 
 interface List {
   id: number;
@@ -23,9 +26,37 @@ interface Activity {
   date: string;
 }
 
-type Props = {};
+interface Priorities {
+  id: number;
+  priorityName: string;
+}
 
-const Activity = (props: Props) => {
+type Props = {
+  activityLists: any;
+  priority: any;
+};
+
+// export const getStaticProps: GetStaticProps<Props> = async () => {
+//   const searchParams = useSearchParams();
+//   const activityId = searchParams.get("id");
+//   const { activityLists } = await Hygraph.request<{ activityLists: List[] }>(
+//     lists,
+//     { activityId }
+//   );
+
+//   const { priority } = await Hygraph.request<{ priority: Priorities[] }>(
+//     priorities
+//   );
+
+//   return {
+//     props: {
+//       activityLists,
+//       priority,
+//     },
+//   };
+// };
+
+const Activity = ({ activityLists, priority }: Props) => {
   const searchParams = useSearchParams();
   const activityId = searchParams.get("id");
   const title = searchParams.get("title");
