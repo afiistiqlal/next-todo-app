@@ -7,107 +7,60 @@ import ActivityGrid from "@/components/templates/ActivityGrid";
 import ActivityCard from "@/components/molecules/ActivityCard";
 import Header from "@/components/templates/Header";
 import Hygraph from "./api/hygraph";
-import { activityQuery } from "./api/query";
+import {
+  getActivities,
+  addActivityQuery,
+  deleteActivityQuery,
+} from "./api/query";
 
 interface Activity {
-  activityId: number;
-  activityTitle: string;
-  activityDate: string;
+  id: string;
+  title: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
-type Props = {
-  allActivity: Activity;
-};
+interface Props {
+  activities: Activity[];
+  // createActivity: Activity;
+  deleteActivity: Activity;
+}
 
-const currentDate = () => {
-  const today = new Date();
-  const yyyy = today.getFullYear();
-  const monthNames = [
-    "Januari",
-    "Februari",
-    "Maret",
-    "April",
-    "Mei",
-    "Juni",
-    "Juli",
-    "Agustus",
-    "September",
-    "Oktober",
-    "November",
-    "Desember",
-  ];
-  let mm = monthNames[today.getMonth()];
-  let dd = today.getDate();
-
-  if (dd < 10) dd = dd;
-
-  const formattedToday = dd + " " + mm + " " + yyyy;
-  return formattedToday;
-};
-
-export async function getStaticProps() {
+export async function getStaticProps(id: string) {
   try {
-    const { allActivity } = await Hygraph.request<{ allActivity: Activity[] }>(
-      activityQuery
+    const { activities } = await Hygraph.request<{ activities: Activity[] }>(
+      getActivities
     );
-
-    if (!allActivity) {
-      return {
-        props: {
-          allActivity: [],
-        },
-      };
-    }
 
     return {
       props: {
-        allActivity,
+        activities,
       },
     };
   } catch (error) {
     return {
       props: {
-        allActivity: ["error"],
+        activities: ["error fetching data"],
+        createActivity: "Failed create new activity",
       },
     };
   }
 }
 
-export default function Home({ allActivity }: Props) {
-  // console.log(allActivity);
-  const [activities, setActivities] = useState<Activity[]>([]);
-
-  // useEffect(() => {
-  //   const savedActivities = localStorage.getItem("activities");
-  //   if (savedActivities) {
-  //     setActivities(JSON.parse(savedActivities));
-  //   }
-  // }, []);
-
-  // useEffect(() => {
-  //   localStorage.setItem("activities", JSON.stringify(activities));
-  // }, [activities]);
-
-  const addActivity = () => {
-    const newActivity = {
-      activityId: activities.length + 1,
-      activityTitle: "New Activity",
-      activityDate: currentDate(),
-    };
-    setActivities((prevActivities) => [...prevActivities, newActivity]);
+export default function Home({ activities }: Props) {
+  const createActivityHandle = () => {
+    Hygraph.request(addActivityQuery("New Activity"));
   };
 
-  const removeActivity = (cardIndex: any) => {
-    setActivities((prevActivities) =>
-      prevActivities.filter((value, i) => i !== cardIndex)
-    );
+  const removeActivity = (id: string) => {
+    Hygraph.request(deleteActivityQuery(id));
   };
 
   return (
     <Layout>
       <Header>
         <Heading>Activity</Heading>
-        <Button text="➕ Tambah" onClick={addActivity} />
+        <Button text="➕ Tambah" onClick={createActivityHandle} />
       </Header>
       <div className="py-8">
         {activities.length === 0 ? (
@@ -117,10 +70,10 @@ export default function Home({ allActivity }: Props) {
             {activities.map((activity, index) => (
               <ActivityCard
                 key={index}
-                id={activity.activityId}
-                title={activity.activityTitle}
-                date={activity.activityDate}
-                deleteCard={() => removeActivity(index)}
+                id={activity.id}
+                title={activity.title}
+                createdAt={activity.createdAt}
+                deleteCard={() => removeActivity(activity.id)}
               />
             ))}
           </ActivityGrid>
